@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -26,17 +27,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-    }
-
-    override fun onStart() {
-        super.onStart()
+        binding = ActivityMainBinding.inflate(layoutInflater)
     }
 
     override fun onResume() {
         super.onResume()
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        Log.d("check binding",binding.toString())
         handleClicks()
-
     }
     private fun handleClicks() {
         // handle clicks for digit buttons
@@ -59,13 +56,14 @@ class MainActivity : AppCompatActivity() {
         handleClicksForOperatorButton(binding.opPower)
 
         // handle clicks for action buttons
+
         handleDeleteButtonClick()
         handleClearAllButtonClick()
         handleShowResultClick()
     }
 
     private fun handleShowResultClick() {
-        binding.resultOutput!!.setOnClickListener {
+        this.binding.resultOutput.setOnClickListener {
             try {
                 calculation =
                     Calculation(number1 = numb1Str.toDouble(), number2 = numb2Str.toDouble())
@@ -84,12 +82,12 @@ class MainActivity : AppCompatActivity() {
                 Operator.POWER -> calculation.power().toString()
                 else -> resultStr
             }
-            binding.resultOutput!!.setText(resultStr)
+            binding.resultOutput.text = resultStr
         }
     }
 
     private fun handleClearAllButtonClick() {
-        binding.clearAll!!.setOnClickListener{
+        this.binding.clearAll.setOnClickListener{
             numb1Str = ""
             numb2Str = ""
             resultStr = ""
@@ -97,13 +95,13 @@ class MainActivity : AppCompatActivity() {
             editingFirstNumber = true
             editingSecondNumber = false
             updateFormula()
-            binding.resultOutput!!.setText("0")
-            Toast.makeText(this," ClearAll has been instantiated", Toast.LENGTH_SHORT).show()
+            binding.resultOutput.text = "0"
         }
     }
 
     private fun handleDeleteButtonClick() {
-        binding.deleteChar!!.setOnClickListener {
+        Log.d("check delete", this.binding.characterDeleter.toString())
+        this.binding.characterDeleter.setOnClickListener {
             when {
                 formulaStr.length == operatorPosition -> {
                     editingFirstNumber = false
@@ -118,8 +116,8 @@ class MainActivity : AppCompatActivity() {
                     editingSecondNumber = true
                 }
             }
-            if (editingFirstNumber) numb1Str.dropLast(1)
-            else if (editingSecondNumber) numb2Str.dropLast(1)
+            if (editingFirstNumber && numb1Str.isNotEmpty()) numb1Str.dropLast(1)
+            else if (editingSecondNumber && numb2Str.isNotEmpty()) numb2Str.dropLast(1)
             else {
                 currentOperator = Operator.UNDEFINED
                 editingFirstNumber = true
@@ -149,23 +147,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun getNumberStringValueFromDigitButtonID(numberButtonID: Int): String =  when(numberButtonID){
+        binding.numb1.id -> resources.getString(R.string._1)
+        binding.numb2.id -> resources.getString(R.string._2)
+        binding.numb3.id -> resources.getString(R.string._3)
+        binding.numb4.id -> resources.getString(R.string._4)
+        binding.numb5.id -> resources.getString(R.string._5)
+        binding.numb6.id -> resources.getString(R.string._6)
+        binding.numb7.id -> resources.getString(R.string._7)
+        binding.numb8.id -> resources.getString(R.string._8)
+        binding.numb9.id -> resources.getString(R.string._9)
+        binding.numb0.id -> resources.getString(R.string._0)
+        else -> {""}
+    }
     private fun handleClicksForDigitButton(numberButton: Button) {
-        val typedNumberCharacterStringValue: String = when(numberButton.id){
-            binding.numb1.id -> resources.getString(R.string._1)
-            binding.numb2.id -> resources.getString(R.string._2)
-            binding.numb3.id -> resources.getString(R.string._3)
-            binding.numb4.id -> resources.getString(R.string._4)
-            binding.numb5.id -> resources.getString(R.string._5)
-            binding.numb6.id -> resources.getString(R.string._6)
-            binding.numb7.id -> resources.getString(R.string._7)
-            binding.numb8.id -> resources.getString(R.string._8)
-            binding.numb9.id -> resources.getString(R.string._9)
-            binding.numb0.id -> resources.getString(R.string._0)
-            else -> {""}
-        }
         numberButton.setOnClickListener{
-            if (editingFirstNumber) numb1Str += typedNumberCharacterStringValue
-            else numb2Str += typedNumberCharacterStringValue
+            val numberDigit: String = getNumberStringValueFromDigitButtonID(numberButton.id)
+            if (editingFirstNumber) numb1Str += numberDigit
+            else numb2Str += numberDigit
             updateFormula()
         }
     }
@@ -175,6 +174,7 @@ class MainActivity : AppCompatActivity() {
             if(currentOperator == Operator.UNDEFINED)
                 numb1Str
             else numb1Str + currentOperator + numb2Str
-        binding.currentFormula!!.text = if(formulaStr=="") "0" else formulaStr
+        binding.currentFormula.text = if(formulaStr=="") "0" else formulaStr
     }
 }
+

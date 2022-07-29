@@ -37,6 +37,7 @@
         android:layout_height="wrap_content">
 
         <TableRow
+            android:weightSum="5"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -172,11 +173,13 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/special_buttons"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/delete_char"
+                android:id="@+id/character_deleter"
+                android:layout_weight="1"
                 android:layout_marginHorizontal="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
