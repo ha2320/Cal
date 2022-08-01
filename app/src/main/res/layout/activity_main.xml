@@ -1,33 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activities.MainActivity" >
+    tools:context=".activities.MainActivity">
 
     <TextView
-        android:id="@+id/current_formula"
+        android:id="@+id/formula_output"
         android:layout_weight="1"
         android:paddingVertical="50dp"
         android:textAlignment="textEnd"
         android:paddingHorizontal="10dp"
-        android:textSize="80sp"
+        android:textSize="60sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/_0" />
+        android:text="@string/value0" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="60sp"
+            android:text="@string/equal_text" />
+
+        <TextView
+            android:id="@+id/result_output"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/value0"
+            android:textAlignment="textEnd"
+            android:textSize="60sp" />
+
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/result_output"
-        android:layout_weight="1"
-        android:paddingVertical="50dp"
-        android:textAlignment="textEnd"
-        android:paddingHorizontal="10dp"
-        android:textSize="80sp"
+        android:id="@+id/error_text_output"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/_0"  />
+        android:layout_weight="1"
+        android:padding="10dp"
+        android:textAlignment="center"
+        android:textColor="#FF0000"
+        android:text="" />
 
     <TableLayout
         android:id="@+id/touch_panel"
@@ -170,6 +192,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/_power" />
+
         </TableRow>
 
         <TableRow

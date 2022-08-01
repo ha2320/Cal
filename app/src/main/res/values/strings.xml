@@ -10,6 +10,7 @@
     <string name="_8">8</string>
     <string name="_9">9</string>
     <string name="_0">0</string>
+    <string name="value0">0.0</string>
     <string name="_plus">+</string>
     <string name="_minus">-</string>
     <string name="_multiply">*</string>
@@ -18,4 +19,6 @@
     <string name="delete">x</string>
     <string name="clear_all">Clear All</string>
     <string name="equal_mark">=</string>
+    <string name="equal_text">=</string>
+    <string name="dot">.</string>
 </resources>
