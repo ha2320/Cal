@@ -1,10 +1,8 @@
 package com.example.cal.activities
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.cal.R
 import com.example.cal.databinding.ActivityMainBinding
@@ -157,7 +155,6 @@ class MainActivity : AppCompatActivity() {
                 editingFirstNumber = true
                 operatorPosition = -5
             }
-            Log.d("numbercheck afterdelete","$numb1Str $numb2Str")
             updateFormula()
         }
     }
