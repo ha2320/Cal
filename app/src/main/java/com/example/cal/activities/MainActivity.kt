@@ -1,6 +1,7 @@
 package com.example.cal.activities
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
@@ -33,20 +34,61 @@ class MainActivity : AppCompatActivity() {
     private var numb2DotPos = -5
     private var operatorPosition = -5 // necessary for delete-1-character button
     private var currentOperator: Operator = Operator.UNDEFINED
-    private lateinit var digitButtonClickListener: View.OnClickListener
-    private lateinit var operatorButtonClickListener: View.OnClickListener
+    private var digitButtonClickListener: View.OnClickListener? = null
+    private var operatorButtonClickListener: View.OnClickListener? = null
     private var calculation: Calculation? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        numb1Str = savedInstanceState.getString("firstNumberString","0.0").ifBlank { "0.0" }
+        numb2Str = savedInstanceState.getString("secondNumberString","0.0").ifBlank { "0.0" }
+        resultStr = savedInstanceState.getString("resultString", "0.0").ifBlank { "0.0" }
+        currentOperator = getOpFromString(savedInstanceState.getString("operator",""))
+        updateFormula()
+        Log.d("result check",resultStr)
+        binding?.resultOutput?.text = resultStr
+    }
+
+    private fun getOpFromString(operatorStr: String?): Operator
+        = when (operatorStr){
+            "+" -> Operator.PLUS
+            "-" -> Operator.MINUS
+            "*" -> Operator.MULTIPLY
+            "/" -> Operator.DIVIDE
+            else -> Operator.UNDEFINED
+        }
+
+    // configuration change calls onRestart() -> onStart()
+    // therefore onCreate isn't overridden
+    // all setup is done in onStart()
+    override fun onStart() {
+        super.onStart()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+        declareDigitAndOpsOnClickListeners()
+        // set onClickListeners
+        handleClicks()
+    }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("firstNumberString", numb1Str)
+        outState.putString("secondNumberString", numb2Str)
+        outState.putString("resultString", resultStr)
+        outState.putString("operator", currentOperator.getVal())
+    }
+    override fun onStop() {
+        super.onStop()
+        binding = null
+        digitButtonClickListener = null
+        operatorButtonClickListener = null
+    }
+
+    private fun declareDigitAndOpsOnClickListeners() {
         // Declare OnClick Listener for Digit Buttons
-        digitButtonClickListener = View.OnClickListener {
-            digitButton ->
-
+        digitButtonClickListener = View.OnClickListener { digitButton ->
             // if old result is available, clear it and start a new calculation
-            if(resultStr.isNotBlank()) {
+            if (resultStr.isNotBlank()) {
                 onStartNewCalculation()
                 resultStr = ""
             }
@@ -63,8 +105,7 @@ class MainActivity : AppCompatActivity() {
             updateFormula()
         }
         // Declare OnClick Listener for Operator Buttons
-        operatorButtonClickListener = View.OnClickListener {
-            operatorButton ->
+        operatorButtonClickListener = View.OnClickListener { operatorButton ->
             val newOp: Operator = getOpStringFromOpButton(operatorButton.id)
             val highPriorityOperators = listOf(
                 Operator.MULTIPLY,
@@ -88,12 +129,11 @@ class MainActivity : AppCompatActivity() {
                 && resultStr.isBlank()
             ) {
                 if (editingFirstNumber && numb1Str.isBlank()) numb1Str = "-"
-                else if(editingSecondNumber && numb2Str.isBlank())  numb2Str = "-"
+                else if (editingSecondNumber && numb2Str.isBlank()) numb2Str = "-"
                 else if (numb2Str.isBlank()) onFinishFirstNumber(newOp)
-            }
-            else if (numb1Str.isNotBlank()){
+            } else if (numb1Str.isNotBlank()) {
                 // if number1 isn't blank, it would probably have been finished
-                if(resultStr.isNotBlank()) {
+                if (resultStr.isNotBlank()) {
                     onStartNewCalculation()
                     numb1Str = resultStr
                     resultStr = ""
@@ -105,16 +145,12 @@ class MainActivity : AppCompatActivity() {
                 * move on to number2
                 */
                 onFinishFirstNumber(newOp)
-            }
-            else if(resultStr.isBlank() && numb1Str.isBlank()){
+            } else if (resultStr.isBlank() && numb1Str.isBlank()) {
                 // this is the start of a new calculation, seems negative
                 numb1Str = "-"
             }
             updateFormula()
         }
-
-        // set onClickListeners
-        handleClicks()
     }
 
     private fun onFinishFirstNumber(newOp: Operator) {
