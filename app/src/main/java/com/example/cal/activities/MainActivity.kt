@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleDeleteButtonClick() {
-        binding.deleteChar!!.setOnClickListener {
+        binding.characterDeleter?.setOnClickListener {
             when {
                 formulaStr.length == operatorPosition -> {
                     editingFirstNumber = false
@@ -175,6 +175,6 @@ class MainActivity : AppCompatActivity() {
             if(currentOperator == Operator.UNDEFINED)
                 numb1Str
             else numb1Str + currentOperator + numb2Str
-        binding.currentFormula!!.text = if(formulaStr=="") "0" else formulaStr
+        binding.formulaOutput?.text = if(formulaStr=="") "0" else formulaStr
     }
 }
