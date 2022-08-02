@@ -8,7 +8,7 @@ interface Calculating{
     var number2: Number?
     fun plus(): Double = number1.toDouble() + (number2?.toDouble() ?: 0.0)
 
-    fun minus(): Double = number1.toDouble() + (number2?.toDouble() ?: 0.0)
+    fun minus(): Double = number1.toDouble() - (number2?.toDouble() ?: 0.0)
 
     fun multiply(): Double = number1.toDouble() * (number2?.toDouble() ?: 1.0)
 

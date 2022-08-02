@@ -14,6 +14,8 @@ class MainActivity : AppCompatActivity() {
     private var resultStr: String = "" // string value of the calculated result
     private var numb1Str: String = ""
     private var numb2Str: String = ""
+    private var numb1DotPos = -5
+    private var numb2DotPos = -5
     private var formulaStr: String = "" // represent the math, made up from $numb1Str$currentOperator$numb2Str
     private var editingFirstNumber = true
     private var editingSecondNumber = false
@@ -38,17 +40,17 @@ class MainActivity : AppCompatActivity() {
             }
             val numberDigit: String = getNumberStringValueFromDigitButtonID(digitButton!!.id)
             if (editingFirstNumber) numb1Str =
-                if (numb1Str != "" && numb1Str.first().toString() == "0") numberDigit
+                if (numb1Str != "" && numb1Str.first() == '0' && numb1Str[1] != '.') numberDigit
                 else numb1Str + numberDigit
             else numb2Str =
-                if (numb2Str != "" && numb2Str.first().toString() == "0") numberDigit
+                if (numb2Str != "" && numb2Str.first() == '0' && numb2Str[1] != '.') numberDigit
                 else numb2Str + numberDigit
             updateFormula()
         }
         // Declare OnClick Listener for Operator Buttons
         operatorButtonClickListener = View.OnClickListener {
             operatorButton ->
-            val newOp: Operator = getOpStringFromOpButton(operatorButton as Button)
+            val newOp: Operator = getOpStringFromOpButton(operatorButton.id)
             if (numb1Str != ""){
                 if(resultStr.isNotBlank()) {
                     onStartNewCalculation()
@@ -79,6 +81,34 @@ class MainActivity : AppCompatActivity() {
         binding!!.numb9.setOnClickListener(digitButtonClickListener)
         binding!!.numb0.setOnClickListener(digitButtonClickListener)
 
+        binding?.dot?.setOnClickListener{
+            if (resultStr.isNotBlank()) {
+                onStartNewCalculation()
+                resultStr = ""
+            }
+            if (editingFirstNumber) {
+                if (numb1Str == "") {
+                    numb1Str = "0."
+                    numb1DotPos = 1
+                }
+                else if ( numb1DotPos == -5){
+                    numb1DotPos = numb1Str.length
+                    numb1Str += "."
+                }
+            }
+            else if(editingSecondNumber) {
+                if (numb2Str == "") {
+                    numb2Str = "0."
+                    numb2DotPos = 1
+                }
+                else if (numb2DotPos == -5) {
+                    numb2DotPos = numb2Str.length
+                    numb2Str += "."
+                }
+            }
+            updateFormula()
+        }
+
         // handle clicks for operator buttons
         binding!!.opPlus.setOnClickListener(operatorButtonClickListener)
         binding!!.opMinus.setOnClickListener(operatorButtonClickListener)
@@ -87,7 +117,7 @@ class MainActivity : AppCompatActivity() {
         binding!!.opPower.setOnClickListener(operatorButtonClickListener)
 
         // handle clicks for action buttons
-        handleDeleteButtonClick()
+        handleDeleteButtonClick()   // split into a separated function for being too long
         binding!!.clearAll.setOnClickListener{clearAll()}
         binding!!.showResult.setOnClickListener { showResult() }
     }
@@ -124,6 +154,8 @@ class MainActivity : AppCompatActivity() {
     private fun onStartNewCalculation() {
         numb1Str = ""
         numb2Str = ""
+        numb1DotPos = -5
+        numb2DotPos = -5
         currentOperator = Operator.UNDEFINED
         editingFirstNumber = true
         editingSecondNumber = false
@@ -145,10 +177,14 @@ class MainActivity : AppCompatActivity() {
                     editingSecondNumber = true
                 }
             }
-            if (editingFirstNumber && numb1Str!="") numb1Str = numb1Str.dropLast(1)
+            if (editingFirstNumber && numb1Str!="") {
+                numb1Str = numb1Str.dropLast(1)
+                if(numb1DotPos == numb1Str.length) numb2DotPos = -5
+            }
             else if (editingSecondNumber) {
                 if( numb2Str!= "") numb2Str = numb2Str.dropLast(1)
                 else if( operatorPosition == -5 ) numb1Str = numb1Str.dropLast(1)
+                if(numb2DotPos == numb2Str.length) numb2DotPos = -5
             }
             else {
                 currentOperator = Operator.UNDEFINED
@@ -159,8 +195,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getOpStringFromOpButton(operatorButton: Button): Operator
-        = when (operatorButton.id) {
+    private fun getOpStringFromOpButton(operatorButtonID: Int): Operator
+        = when (operatorButtonID) {
             binding!!.opPlus.id -> Operator.PLUS
             binding!!.opMinus.id -> Operator.MINUS
             binding!!.opMultiply.id -> Operator.MULTIPLY
